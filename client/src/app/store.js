@@ -4,7 +4,7 @@ import reducers from "../reducers";
 const initialState = {
     links: [
         { text: "Home", path: '/' },
-    ]
+    ],
 }
 
 const linksReducer = (state = initialState, action) => state;

@@ -4,7 +4,7 @@ import axios from "axios";
 export const getPosts = () => async (dispatch) => {
     try {
         const { data } = await axios.get(URL);
-        console.log(data);
+        //console.log(data);
         dispatch({ type: "FETCH_POSTS", payload: data });
         
     } catch (error) {
