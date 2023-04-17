@@ -23,12 +23,28 @@ export const signIn = (data) => async (dispatch) => {
     try {
         axios.post(URL + '/signin', data)
             .then((res) => {
+
                 dispatch({ type: "SIGN_IN", payload: res.data });
             })
             .catch(err => {
+                console.log('error -> ', err.response)
                 dispatch({ type: "SIGN_IN_ERROR", payload: err.response.data || {} });
             });
     } catch(err) {
         console.log(err);
+    }
+}
+
+export const checkUserToken = (token) => async (dispatch) => {
+    if(!token) return;
+
+    try {
+        axios.post(URL + '/check_token', token)
+            .then(res => {
+                
+            })
+            .catch(err => {
+                //console.log('')
+            })
     }
 }

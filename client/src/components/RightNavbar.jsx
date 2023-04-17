@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 
 const RightNavbar = () => {
   
-  const userIsLogged = useSelector(state => state.userLogged);
+  const userIsLogged = useSelector(state => state.auth.userLogged);
 
   return (
     <Grid sx={{ px: 3, py: 2, position: "fixed"}}>

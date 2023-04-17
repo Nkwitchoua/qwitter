@@ -8,7 +8,7 @@ import PostForm from './PostForm'
 const Feed = () => {
 
     const dispatch = useDispatch();
-    const userIsLogged = useSelector(state => state.userLogged);
+    const userIsLogged = useSelector(state => state.auth.userLogged);
     const posts = useSelector(state => state.posts);
     
     useEffect(() => {

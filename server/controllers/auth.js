@@ -57,38 +57,47 @@ export const signup = (req, res, next) => {
 
 export const signin = (req, res) => {
     let { email, password } = req.body;
-    const errors = [];
+    const payload = { success: false }
+
     if (!email) return res.status(422).json({ error: "EMAIL_NOT_PROVIDED" });
     if (!emailRegexp.test(email)) return res.status(422).json({ error: "INVALID_EMAIL" });
     if (!password) return res.status(422).json({ error: "PASSWORD_NOT_PROVIDED" });
+    console.log('BEFORE USER FIND ONE')
 
     User.findOne({ email: email }).then(user => {
         if(!user) {
+            console.log('USER NOT FOUND')
             return res.status(404).json({ error: "USER_NOT_FOUND" });
         } else {
             bcrypt.compare(password, user.password).then(isMatch => {
                 if(!isMatch) {
+                    console.log('INVALID PASSWORD')
                     return res.status(400).json({ error: "INCORRECT_PASSWORD" });
                 }
             });
             
             let access_token = createJWT(user.email, user._id, 3600);
+            console.log('BEFORE JWT')
             jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
                 if(err) {
-                    res.status(500).json({ error: err });
+                    console.log('JWT ERROR')
+                    return res.status(500).json({ error: err });
                 }
                 if(decoded) {
-                    return res.status(200).json({
-                        success: true,
-                        token: access_token,
-                        message: user
-                    });
+                    console.log('SUCCESFULL RETURN USER')
+                    payload.succes = true;
+                    payload.message = user;
+                    payload.token = access_token;
                 }
-            }).catch(err => {
-                res.status(500).json({ error: err });
-            });
+            })
+            // .catch(err => {
+            //     console.log('JWT CATCH')
+            //     return res.status(500).json({ error: err });
+            // });
         }
+        return res.status(200).json( payload );
     }).catch(err => {
-        res.status(500).json({ error: err });
+        console.log('USER FIND ONE CATCH')
+        return res.status(500).json({ error: err });
     });
 }

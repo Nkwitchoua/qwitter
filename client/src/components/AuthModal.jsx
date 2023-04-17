@@ -13,6 +13,10 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
     const dispatch = useDispatch();
     const todayDate = useSelector(state => state.commonTools.todayDate);
     const userIsLogging = useSelector(state => state.auth.userIsLogging);
+    const userLogged = useSelector(state => {
+        console.log(state);
+        return state.userLogged;
+    });
 
     const [ signUpData, setSignUpData ] = useState({
         password: '',

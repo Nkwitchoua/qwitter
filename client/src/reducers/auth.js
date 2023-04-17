@@ -18,7 +18,7 @@ export default (authState = INIT_STATE, action) => {
         case "SIGN_IN":
             return {
                 ...authState,
-                userIsLogged: true,
+                userLogged: true,
                 userIsLogging: false
             }
         case "SIGN_UP_ERROR":

@@ -3,7 +3,6 @@ const INIT_STATE = {
 }
 
 export default (constants = INIT_STATE, action) => {
-    console.log(' action -> -> -> ', action);
     switch(action.type) {
         case "GET_TODAY_DATE":
             return {

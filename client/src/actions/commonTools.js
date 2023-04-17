@@ -1,7 +1,6 @@
 import axios from "axios";
 
 export const getTodayDate = () => (dispatch) => {
-    console.log('dispatch constants -> ',dispatch);
     let day = new Date().getDate().toString();
     let month = new Date().getMonth().toString();
     let year = new Date().getFullYear().toString();
