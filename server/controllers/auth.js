@@ -3,8 +3,20 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { createJWT } from "../utils/auth.js";
 
+const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
 export const signup = (req, res, next) => {
+    console.log(req.body);
     let { name, email, password, password_confirmation } = req.body;
+    const errors = [];
+
+    if(!name) errors.push({ name: "required" });
+    if(!email) errors.push({ email: "required" });
+    if(!emailRegexp.test(email)) errors.push({ email: "invalid" });
+    if(!password) errors.push({ password: "required" });
+    if(!password_confirmation) errors.push({ password_confirmation: "required" });
+    if(password !== password_confirmation) errors.push({ password: "mismatch" });
+    if(errors.length > 0) return res.status(422).json({ errors: errors});
 
     User.findOne({email: email})
     .then(user => {
@@ -28,6 +40,7 @@ export const signup = (req, res, next) => {
                                 result: response
                             })
                         }).catch(err => {
+                            console.log(err);
                             res.status(500).json({
                                 errors: [{error: err}]
                             });
@@ -44,25 +57,25 @@ export const signup = (req, res, next) => {
 
 export const signin = (req, res) => {
     let { email, password } = req.body;
+    const errors = [];
+    if (!email) return res.status(422).json({ error: "EMAIL_NOT_PROVIDED" });
+    if (!emailRegexp.test(email)) return res.status(422).json({ error: "INVALID_EMAIL" });
+    if (!password) return res.status(422).json({ error: "PASSWORD_NOT_PROVIDED" });
 
     User.findOne({ email: email }).then(user => {
         if(!user) {
-            return res.status(404).json({
-                errors: [{ user: "not found" }]
-            });
+            return res.status(404).json({ error: "USER_NOT_FOUND" });
         } else {
             bcrypt.compare(password, user.password).then(isMatch => {
                 if(!isMatch) {
-                    return res.status(400).json({
-                        errors: [{ password: "incorrect" }]
-                    });
+                    return res.status(400).json({ error: "INCORRECT_PASSWORD" });
                 }
-            })
+            });
             
             let access_token = createJWT(user.email, user._id, 3600);
             jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
                 if(err) {
-                    res.status(500).json({ erros: err });
+                    res.status(500).json({ error: err });
                 }
                 if(decoded) {
                     return res.status(200).json({
@@ -72,10 +85,10 @@ export const signin = (req, res) => {
                     });
                 }
             }).catch(err => {
-                res.status(500).json({ erros: err });
+                res.status(500).json({ error: err });
             });
         }
     }).catch(err => {
-        res.status(500).json({ erros: err });
+        res.status(500).json({ error: err });
     });
 }

@@ -1,12 +1,19 @@
-import { Box, Button, Grid, IconButton, InputAdornment, Link, List, ListItem, MenuItem, Modal, Select, TextField, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Grid, IconButton, InputAdornment, Link, List, ListItem, MenuItem, Modal, Select, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DateSelect from './CommonComponents/DateSelect';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTodayDate } from '../actions/commonTools';
+import { signIn, signUp } from '../actions/auth';
 
 const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
+    const dispatch = useDispatch();
+    const todayDate = useSelector(state => state.commonTools.todayDate);
+    const userIsLogging = useSelector(state => state.auth.userIsLogging);
+
     const [ signUpData, setSignUpData ] = useState({
         password: '',
         password_confirmation: '',
@@ -14,9 +21,10 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
         name: '',
         birth_date: '1970.01.01'
     });
+
     const [ showPass, setShowPass ] = useState(false);
     const [ showPassConfirm, setShowPassConfirm ] = useState(false);
-    const [ passValid, setPassValid ] = useState(true);
+    const [ passValid, setPassValid ] = useState(false);
     const [ passCheckpoints, setPassCheckpoints ] = useState({
         isLongEnough: true,
         hasUpperCase: true,
@@ -34,8 +42,9 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
         const value = e.target.value;
         const dataObj = { ...signUpData };
         dataObj[fieldName] = value;
+
         setSignUpData(dataObj);
-        if(fieldName === "password" || fieldName === "password_confirmation") {
+        if(fieldName === "password") {
             setTimeout(() => {
                 validatePass(value)
             }, 500);
@@ -77,28 +86,83 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
         if(!email || !name || !birth_date) return false;
         return true;
     }
-
-    const signUp = () => {
-        console.log('sign up')
+    
+    const validateEmail = () => {
+        const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+        return signUpData.email === '' || emailRegexp.test(signUpData.email);
     }
 
-    const signIn = () => {
-        console.log('sign in')
+    const handleInputSignIn = (e) => {
+        const fieldName = e.target.name;
+        const value = e.target.value;
+        const dataObj = { ...signInData };
+        dataObj[fieldName] = value;
+        setSignInData(dataObj);
+    }
+
+    const submitSignUp = (data) => {
+        dispatch(signUp(data));
+    }
+
+    const submitSignIn = (data) => {
+        console.log(data);
+        dispatch(signIn(data));
     }
 
     const signInCheckAllFields = () => {
         return true;
     }
 
-    const validateEmail = () => {
-        const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-        return signUpData.email === '' || emailRegexp.test(signUpData.email);
+    const handleSignUpData = () => {
+        setSignUpData({
+            ...signUpData,
+            birth_date: todayDate
+        });
     }
 
     const handleAuthType = (authName) => {
         if(!authName || typeof(authName) !== "string") return;
         setAuth(authName);
     }
+
+    useEffect(() => {
+        if(authType === 'sign up') {
+            dispatch(getTodayDate());
+        }
+    }, [dispatch]);
+    
+    useEffect(() => {
+        if(todayDate && authType === 'sign up') {
+            handleSignUpData();
+        }
+    }, [todayDate]);
+
+    //useEffect(() => {
+        console.log('userIsLogging Auth Modal',userIsLogging);
+        if(userIsLogging) {
+            return (
+                <Modal
+                    open={true}
+                    onClose={toggleModal}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description">
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: 'white',
+                        borderRadius: '16px',
+                        width: '600px',
+                        height: '600px',
+                        my: 3,
+                        mx: 'auto',
+                    }}>
+                        <CircularProgress />
+                    </Box>
+                </Modal>
+            )
+        }
+    //}, [userIsLogging])
 
     return (
         <Modal
@@ -119,11 +183,9 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
                 <Box px={2} display='flex' alignItems='center' gap={3}>
                     {
                         signUpPassPage ?
-
                         <IconButton onClick={() => setSignUpPassPage(false)}>
                             <ArrowBackIcon color='black.500'/>
                         </IconButton> :
-
                         <IconButton onClick={() => toggleModal()}>
                             <CloseIcon color='black.500'/>
                         </IconButton>
@@ -142,7 +204,7 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
                                             <TextField 
                                                 onChange={(e) => handleInputSignUp(e)}
                                                 name='password'
-                                                error={!passValid} 
+                                                error={!passValid && signUpData.password} 
                                                 margin='normal' 
                                                 type={showPass ? 'text' : 'password'}
                                                 value={signUpData.password}
@@ -222,6 +284,14 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
                                                         Цифры
                                                     </Typography>
                                                 </ListItem>
+                                                <ListItem disablePadding={true}>
+                                                    <Typography
+                                                    fontSize='12px'
+                                                    color={signUpData.password === signUpData.password_confirmation || !signUpData.password ? 
+                                                        'grey' : 'red'}>
+                                                        Пароли должны совпадать
+                                                    </Typography>
+                                                </ListItem>
                                             </List>
                                         </Box>
                                     </>) : (<>
@@ -282,8 +352,36 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
                                 </Typography>
                                 
                                 <Box overflow='auto'>
-                                    <TextField margin='normal' fullWidth label='Логин' variant='outlined' />
-                                    <TextField margin='normal' fullWidth label='Пароль' variant='outlined' />
+                                    <TextField 
+                                        margin='normal' 
+                                        fullWidth 
+                                        label='Эл.почта' 
+                                        name='email'
+                                        variant='outlined'
+                                        value={signInData.email}
+                                        onChange={(e) => handleInputSignIn(e)} />
+                                    <TextField 
+                                        margin='normal' 
+                                        fullWidth 
+                                        name='password'
+                                        type={ showPass ? 'text' : 'password'}
+                                        label='Пароль'
+                                        variant='outlined'
+                                        value={signInData.password}
+                                        onChange={(e) => handleInputSignIn(e)} 
+                                        InputProps={{
+                                            endAdornment: 
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                    aria-label="toggle password visibility"
+                                                    onClick={() => setShowPass(!showPass)}
+                                                    //onMouseDown={handleMouseDownPassword}
+                                                    edge="end"
+                                                    >
+                                                    {showPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                        }}/>
                                 </Box>
                             </>
                         )
@@ -296,13 +394,18 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
                         variant='contained'
                         onClick={
                             authType === "sign up" ? 
-                                signUpPassPage ? () => signUp() : () => setSignUpPassPage(true) :
-                                () => signIn()
+                                signUpPassPage ? () => submitSignUp(signUpData) : () => setSignUpPassPage(true) :
+                                () => submitSignIn(signInData)
                         }
                         disabled={ 
                             authType === 'sign up' 
                             ? 
-                                signUpPassPage ? !passValid && signUpData.password === '' : !signUpCheckAllFields() 
+                                signUpPassPage 
+                                ? 
+                                    !passValid || signUpData.password === '' || 
+                                    signUpData.password !== signUpData.password_confirmation 
+                                : 
+                                    !signUpCheckAllFields() 
                             : 
                                 !signInCheckAllFields() 
                         }>

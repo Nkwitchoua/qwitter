@@ -8,20 +8,29 @@ import PostForm from './PostForm'
 const Feed = () => {
 
     const dispatch = useDispatch();
-
+    const userIsLogged = useSelector(state => state.userLogged);
     const posts = useSelector(state => state.posts);
-
+    
     useEffect(() => {
         dispatch(getPosts());
     }, [dispatch])
 
     return (
         <div>
-            <PostForm />
+            {
+                userIsLogged ?
+                <PostForm /> :
+                <></>
+            }
             <div>
                 {
                     posts.length == 0 ? (
-                        <div style={{margin: '40px 0', display: 'flex', justifyContent: 'center',}}>
+                        <div style={{
+                                margin: '40px 0', 
+                                display: 'flex', 
+                                justifyContent: 'center', 
+                                alignItems: 'center'
+                            }}>
                             <CircularProgress size={40}/>
                         </div> 
                     ) : (
