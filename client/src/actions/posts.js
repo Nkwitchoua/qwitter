@@ -2,10 +2,10 @@ const URL = "http://localhost:5000/posts";
 import axios from "axios";
 
 export const getPosts = () => async (dispatch) => {
-    console.log('dispatch posts -> ',dispatch)
+    // console.log('dispatch posts -> ',dispatch)
     try {
-        const { data } = await axios.get(URL);
-        //console.log(data);
+        const { data } = await axios.get(URL, { withCredentials: true });
+
         dispatch({ type: "FETCH_POSTS", payload: data });
         
     } catch (error) {

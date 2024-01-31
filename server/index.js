@@ -3,18 +3,32 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
+import { checkToken } from "./middleware/checkToken.js";
 
 const app = express();
 
+app.use(cors({
+    origin:'http://localhost:3000', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
+}));
+app.use(cookieParser());
 
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+
+app.use((req, res, next) => {
+    console.log("INTERCEPTOR BRO")
+    checkToken(req, res, next);
+    
+    next();
+})
 
 app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);

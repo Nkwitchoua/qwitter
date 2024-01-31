@@ -6,7 +6,6 @@ import { createJWT } from "../utils/auth.js";
 const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export const signup = (req, res, next) => {
-    console.log(req.body);
     let { name, email, password, password_confirmation } = req.body;
     const errors = [];
 
@@ -29,15 +28,28 @@ export const signup = (req, res, next) => {
                 password: password,
             });
 
+            const someFunc = (arr, num) => {
+                for(let i = 0; i < arr.length; i++) {
+                    const curr = arr[i];
+                    if(curr > num) return curr;
+                }
+                return num;
+            }
+            
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(password, salt, (err, hash) => {
                     if(err) throw err;
                     user.password = hash;
                     user.save()
-                        .then(response => {
+                    .then(response => {
+                            let access_token = createJWT(user.email, user._id, 3600, process.env.ACCESS_TOKEN_SECRET);
+                            let refresh_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.REFRESH_TOKEN_SECRET)
+
                             res.status(200).json({
                                 success: true,
-                                result: response
+                                result: response,
+                                access_token: access_token,
+                                refresh_token: refresh_token
                             })
                         }).catch(err => {
                             console.log(err);
@@ -71,33 +83,60 @@ export const signin = (req, res) => {
         } else {
             bcrypt.compare(password, user.password).then(isMatch => {
                 if(!isMatch) {
-                    console.log('INVALID PASSWORD')
                     return res.status(400).json({ error: "INCORRECT_PASSWORD" });
                 }
             });
             
-            let access_token = createJWT(user.email, user._id, 3600);
-            console.log('BEFORE JWT')
+            let access_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.ACCESS_TOKEN_SECRET);
+            const refresh_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.REFRESH_TOKEN_SECRET)
+
             jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
                 if(err) {
-                    console.log('JWT ERROR')
                     return res.status(500).json({ error: err });
                 }
                 if(decoded) {
-                    console.log('SUCCESFULL RETURN USER')
-                    payload.succes = true;
+                    console.log("VERIFIED!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    payload.success = true;
                     payload.message = user;
-                    payload.token = access_token;
+                    payload.access_token = access_token;
+                    payload.refresh_token = refresh_token;
                 }
-            })
-            // .catch(err => {
-            //     console.log('JWT CATCH')
-            //     return res.status(500).json({ error: err });
-            // });
+            });
+
+            res.cookie('refresh_token', refresh_token
+            , {
+                secure: false,
+                httpOnly: true,
+                credentials: 'include',
+                sameSite: 'strict', 
+                // Adjust to your requirements
+                maxAge: 60 * 1000, // Set the expiration time (7 days in this example)
+              }
+            );
         }
         return res.status(200).json( payload );
     }).catch(err => {
-        console.log('USER FIND ONE CATCH')
+        console.log('USER FIND ONE CATCH', err);
         return res.status(500).json({ error: err });
     });
+}
+
+export const checkToken = (token) => {
+    if(token) {
+        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
+            if(err) {
+                console.log("error in verifying -> ", err);
+            } else {
+                const newJwtToken = jwt.sign({ userId: decoded.userId }, secretKey, { expiresIn: '1h' });
+                sessionStorage.setItem('jwtToken', newJwtToken);
+                res.json({ jwtToken: newJwtToken });
+            }
+        })
+    } else {
+
+    }
+}
+
+export const signout = (req, res) => {
+   
 }

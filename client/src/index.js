@@ -9,7 +9,7 @@ const router = createBrowserRouter([
     {
         path: '/',
     }
-])
+]);
 
 const container = document.querySelector("#root");
 const root = createRoot(container);

@@ -23,12 +23,15 @@ export const signIn = (data) => async (dispatch) => {
     try {
         axios.post(URL + '/signin', data)
             .then((res) => {
+                sessionStorage.setItem('access_token', res.data.access_token);
+
+                console.log("auth cookie checking -> ", res);
 
                 dispatch({ type: "SIGN_IN", payload: res.data });
             })
             .catch(err => {
-                console.log('error -> ', err.response)
-                dispatch({ type: "SIGN_IN_ERROR", payload: err.response.data || {} });
+                console.log('error -> ', err);
+                dispatch({ type: "SIGN_IN_ERROR", payload: err.response.data | {} });
             });
     } catch(err) {
         console.log(err);
@@ -46,5 +49,7 @@ export const checkUserToken = (token) => async (dispatch) => {
             .catch(err => {
                 //console.log('')
             })
+    } catch(err) {
+        console.log(err);
     }
 }

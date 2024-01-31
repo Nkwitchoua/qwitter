@@ -9,11 +9,13 @@ import "./styles/Chirp.otf"
 import "./styles/index.css"
 import { Grid } from "@mui/material";
 import RightNavbar from "./components/RightNavbar";
+import Interceptor from "./http/Interceptor";
 
 const App = () => {
 
     return (
         <Grid container spacing={0} sx={{ height: '100%' }}>
+            <Interceptor/>
             <Grid item xs={3}>
                 <LeftNavbar/>
             </Grid>
