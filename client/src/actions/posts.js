@@ -6,7 +6,7 @@ export const getPosts = () => async (dispatch) => {
     try {
         const { data } = await axios.get(URL, { withCredentials: true });
 
-        dispatch({ type: "FETCH_POSTS", payload: data });
+        dispatch({ type: "FETCH_POSTS", payload: data.posts });
         
     } catch (error) {
         console.log(error.message);
@@ -15,11 +15,9 @@ export const getPosts = () => async (dispatch) => {
 
 export const createPost = (post) => async (dispatch) => {
     try {
-        console.log("post -> " + post);
         const { data } = await axios.post(URL, post);
 
         dispatch({ type: "CREATE_POST", payload: data });
-        console.log('data -> ', data);
     } catch (error) {
         console.log(`Error in actions -> posts.js -> createPost() ${error.message}`);
     }

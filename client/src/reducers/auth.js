@@ -3,11 +3,12 @@ const INIT_STATE = {
     userIsLogging: false,
     userName: '',
     userId: '',
+    userAvatar: '',
     signUpError: '',
 }
 
 export default (authState = INIT_STATE, action) => {
-    console.log(' authState -> -> -> ', action, authState);
+    // console.log(' authState -> -> -> ', action, authState);
     switch(action.type) {
         case "SIGN_UP":
             return {
@@ -16,6 +17,7 @@ export default (authState = INIT_STATE, action) => {
                 userIsLogging: false,
             }
         case "SIGN_IN":
+            console.log("SIGNING_IN -----> ", authState.userLogged);
             return {
                 ...authState,
                 userLogged: true,
@@ -41,6 +43,12 @@ export default (authState = INIT_STATE, action) => {
             return {
                 ...authState,
                 userIsLogging: true
+            }
+        case "SET_CURRENT_USER":
+            return {
+                ...authState,
+                userName: action.payload.name,
+                userAvatar: action.payload.avatar
             }
         default:
             return authState;

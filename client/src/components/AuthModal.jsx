@@ -14,7 +14,6 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
     const todayDate = useSelector(state => state.commonTools.todayDate);
     const userIsLogging = useSelector(state => state.auth.userIsLogging);
     const userLogged = useSelector(state => {
-        console.log(state);
         return state.userLogged;
     });
 
@@ -109,7 +108,6 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
     }
 
     const submitSignIn = (data) => {
-        console.log(data);
         dispatch(signIn(data));
     }
 
@@ -142,7 +140,7 @@ const AuthModal = ({authType = 'sign up', setAuth, toggleModal}) => {
     }, [todayDate]);
 
     //useEffect(() => {
-        console.log('userIsLogging Auth Modal',userIsLogging);
+        // console.log('userIsLogging Auth Modal',userIsLogging);
         if(userIsLogging) {
             return (
                 <Modal

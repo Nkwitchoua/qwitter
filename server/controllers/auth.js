@@ -95,7 +95,6 @@ export const signin = (req, res) => {
                     return res.status(500).json({ error: err });
                 }
                 if(decoded) {
-                    console.log("VERIFIED!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     payload.success = true;
                     payload.message = user;
                     payload.access_token = access_token;
@@ -108,9 +107,8 @@ export const signin = (req, res) => {
                 secure: false,
                 httpOnly: true,
                 credentials: 'include',
-                sameSite: 'strict', 
-                // Adjust to your requirements
-                maxAge: 60 * 1000, // Set the expiration time (7 days in this example)
+                sameSite: 'strict',
+                maxAge: 60 * 1000,
               }
             );
         }

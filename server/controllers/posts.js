@@ -4,11 +4,11 @@ export const getPosts = async (req, res) => {
     try {
         const postMessages = await PostMessage.find();
 
-
-        // console.log('post messages -> ', postMessages[0]);
-        // console.log("getPosts check if we have SOME COOKIES -> ", req.headers.authorization);
-
-        res.status(200).json(postMessages.reverse());
+        res.status(200).json({
+            posts: postMessages.reverse(),
+            authData: res.authData,
+            currentUser: res.currentUser
+        });
     } catch(err) {
         res.status(404).json({ message: `Error in controller posts.js -> ${err}`});
     }

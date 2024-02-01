@@ -1,11 +1,15 @@
 import { Container, Grid } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react'
 import AuthBar from './AuthBar'
 import { useSelector } from 'react-redux'
 
 const RightNavbar = () => {
   
   const userIsLogged = useSelector(state => state.auth.userLogged);
+
+  useEffect(() => {
+    console.log("CHECK USERISLOGGED IN RIGHT NAVBAR -> ", userIsLogged);
+  }, [userIsLogged]);
 
   return (
     <Grid sx={{ px: 3, py: 2, position: "fixed"}}>

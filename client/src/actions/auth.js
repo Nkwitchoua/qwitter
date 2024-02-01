@@ -25,31 +25,24 @@ export const signIn = (data) => async (dispatch) => {
             .then((res) => {
                 sessionStorage.setItem('access_token', res.data.access_token);
 
-                console.log("auth cookie checking -> ", res);
+                // console.log("auth cookie checking -> ", res.data);
 
                 dispatch({ type: "SIGN_IN", payload: res.data });
             })
             .catch(err => {
                 console.log('error -> ', err);
-                dispatch({ type: "SIGN_IN_ERROR", payload: err.response.data | {} });
+                dispatch({ type: "SIGN_IN_ERROR", payload: err|| {} });
             });
     } catch(err) {
         console.log(err);
     }
 }
 
-export const checkUserToken = (token) => async (dispatch) => {
-    if(!token) return;
+export const tokenIsValid = (data) => (dispatch) => {
+    console.log("token is Valid -> ", data);
+    dispatch({ type: "SIGN_IN", payload: data });
+}
 
-    try {
-        axios.post(URL + '/check_token', token)
-            .then(res => {
-                
-            })
-            .catch(err => {
-                //console.log('')
-            })
-    } catch(err) {
-        console.log(err);
-    }
+export const setCurrentUser = (data) => (dispatch) => {
+    dispatch({ type: "SET_CURRENT_USER", payload: data });
 }

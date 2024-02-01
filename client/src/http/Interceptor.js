@@ -1,7 +1,9 @@
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setCurrentUser, tokenIsValid } from "../actions/auth";
 
 const Interceptor = () => {
-    console.log("before anything");
+    const dispatch = useDispatch();
 
     axios.defaults.withCredentials = true
     
@@ -25,9 +27,17 @@ const Interceptor = () => {
     )
 
     axios.interceptors.response.use(
-        function(config) {
-            console.log("RESPONSE CONFIG ->", config);
-            return config;
+        function(response) {
+            console.log("RESPONSE CONFIG ->", response);
+            if(response.data.authData && response.data.authData.authorized) {
+                dispatch(tokenIsValid(response.data.authData));
+                dispatch(setCurrentUser(response.data.currentUser));
+            }
+            return Promise.resolve(response);
+        },
+        function(err) {
+            console.log("ERROR IN RESPONSE INTERCEPTOR", err);
+            return Promise.reject(err);
         }
     )
 }
