@@ -13,6 +13,8 @@ import Interceptor from "./http/Interceptor";
 
 const App = () => {
 
+    console.log(document.cookie)
+
     return (
         <Grid container spacing={0} sx={{ height: '100%' }}>
             <Interceptor/>

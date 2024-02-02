@@ -45,11 +45,18 @@ export const signup = (req, res, next) => {
                             let access_token = createJWT(user.email, user._id, 3600, process.env.ACCESS_TOKEN_SECRET);
                             let refresh_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.REFRESH_TOKEN_SECRET)
 
+                            res.cookie('refresh_token', refresh_token, {
+                                secure: false,
+                                httpOnly: true,
+                                credentials: 'include',
+                                sameSite: 'strict',
+                                maxAge: 60 * 1000,
+                            });
+
                             res.status(200).json({
                                 success: true,
                                 result: response,
-                                access_token: access_token,
-                                refresh_token: refresh_token
+                                access_token: access_token
                             })
                         }).catch(err => {
                             console.log(err);
@@ -87,7 +94,7 @@ export const signin = (req, res) => {
                 }
             });
             
-            let access_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.ACCESS_TOKEN_SECRET);
+            const access_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.ACCESS_TOKEN_SECRET);
             const refresh_token = createJWT(user.email, user._id, 3600 * 24 * 7, process.env.REFRESH_TOKEN_SECRET)
 
             jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
@@ -98,7 +105,6 @@ export const signin = (req, res) => {
                     payload.success = true;
                     payload.message = user;
                     payload.access_token = access_token;
-                    payload.refresh_token = refresh_token;
                 }
             });
 
@@ -111,8 +117,20 @@ export const signin = (req, res) => {
                 maxAge: 60 * 1000,
               }
             );
-        }
-        return res.status(200).json( payload );
+            
+            res.currentUser = {
+                name: user.name,
+                avatar: user.avatar
+            }
+        };
+
+        return res.status(200).json({
+            authData: {
+                ...payload,
+                authorized: true
+            },
+            currentUser: res.currentUser
+        });
     }).catch(err => {
         console.log('USER FIND ONE CATCH', err);
         return res.status(500).json({ error: err });
@@ -136,5 +154,13 @@ export const checkToken = (token) => {
 }
 
 export const signout = (req, res) => {
+    const cookie = res.cookie("refresh_token");
+    if(cookie) res.clearCookie("refresh_token");
+    res.authData = {};
+    res.currentUser = {};
    
+    res.status(200).json({
+        authData: res.authData,
+        currentUser: res.currentUser
+    });
 }

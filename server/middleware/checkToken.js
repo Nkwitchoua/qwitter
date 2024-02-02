@@ -3,6 +3,7 @@ import User from "../models/user.js";
 
 export const checkToken = async (req, res, next) => {
     const token = req.headers.authorization;
+    const cookie = res.cookie("refresh_token");
     const authData = {};
     
     if(token) {
@@ -10,6 +11,7 @@ export const checkToken = async (req, res, next) => {
             if(err) {
                 console.log("error token",err);
                 authData.authorized = false;
+                if(cookie) res.clearCookie("refresh_token");
             } else {
                 console.log("decoded -> ", decoded);
                 authData.authorized = true;
@@ -32,6 +34,7 @@ export const checkToken = async (req, res, next) => {
         })
     } else {
         authData.authorized = false;
+        if(cookie) res.clearCookie("refresh_token");
     }
 
     res.authData = authData;

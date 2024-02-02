@@ -37,7 +37,10 @@ export default (authState = INIT_STATE, action) => {
             }
         case "SIGN_OUT":
             return {
-                ...authState
+                ...authState,
+                userLogged: false,
+                userName: "",
+                userAvatar: ""
             };
         case "USER_IS_LOGGING":
             return {

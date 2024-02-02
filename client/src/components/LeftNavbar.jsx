@@ -1,20 +1,20 @@
-import React, { useEffect } from 'react';
-import { Avatar, Box, CircularProgress, Container, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Avatar, Box, CircularProgress, Container, Grid, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logOut } from '../actions/auth';
 
 const LeftNavbar = () => {
-
-    const userIsLogged = useSelector(state => {return state.auth.userLogged});
+    const userIsLogged = useSelector(state => state.auth.userLogged);
     const userAvatar = useSelector(state => state.auth.userAvatar);
     const userName = useSelector(state => state.auth.userName);
-
-    console.log("userIsLogged before useEffect", userIsLogged);
+    const dispatch = useDispatch();
 
     const menu = [
       {
@@ -39,6 +39,21 @@ const LeftNavbar = () => {
       },
     ];
 
+    const userMenuBtn = document.getElementById("user-menu-button");
+    const [openMenu, setOpenMenu] = useState(false);
+
+    const handleClick = () => {
+      setOpenMenu(true);
+    };
+    const handleClose = () => {
+      setOpenMenu(false);
+    };
+
+    const handleLogOut = () => {
+      console.log("HANDLE LOG OUT -> ")
+      dispatch(logOut());
+    }
+
     return (
         <Grid container sx={{ position: 'sticky', top: 0 }}>
             <Grid item xs={4}></Grid>
@@ -52,11 +67,11 @@ const LeftNavbar = () => {
                     </IconButton>
 
                     {
-                      menu.map(item => {
+                      menu.map((item, key) => {
                         if(item.isProtected && !userIsLogged) return <></>;
                         return <>
-                        <ListItem disablePadding>
-                          <ListItemButton>
+                        <ListItem  key={key} disablePadding>
+                          <ListItemButton style={{ borderRadius: "20px" }}>
                             <ListItemIcon>
                               {item.icon}
                             </ListItemIcon>
@@ -67,11 +82,30 @@ const LeftNavbar = () => {
                       })
                     }
                     {
-                      userIsLogged && userAvatar && userName ? 
+                      userIsLogged && userName ? 
+
                       <ListItem disablePadding>
-                        <ListItemButton>
-                          <Avatar alt="user avatar" src={userAvatar}/>
+                        <ListItemButton style={{ borderRadius: "20px" }}>
+                          <Avatar style={{ marginLeft: "-5px", marginRight: "20px" }} alt="user avatar" src={userAvatar}/>
                           <ListItemText primary={userName} />
+                          <MoreHorizIcon 
+                            aria-controls={openMenu ? 'basic-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={openMenu ? 'true' : undefined}
+                            onClick={handleClick}
+                            id="user-menu-button"
+                          />
+                          <Menu
+                            id="basic-menu"
+                            anchorEl={userMenuBtn}
+                            open={openMenu}
+                            onClose={handleClose}
+                            MenuListProps={{
+                              'aria-labelledby': 'basic-button',
+                            }}
+                          >
+                            <MenuItem onClick={handleLogOut}>Log out</MenuItem>
+                          </Menu>
                         </ListItemButton>
                       </ListItem> :
                         <></>
