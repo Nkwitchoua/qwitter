@@ -10,6 +10,7 @@ import "./styles/index.css"
 import { Grid } from "@mui/material";
 import RightNavbar from "./components/RightNavbar";
 import Interceptor from "./http/Interceptor";
+import Messages from "./pages/Messages";
 
 const App = () => {
 
@@ -28,6 +29,7 @@ const App = () => {
                     height: '100%' }}>
                 <Routes>
                     <Route element={<MainPage/>} path="/"></Route>
+                    <Route element={<Messages/>} path="/messages"></Route>
                 </Routes>
             </Grid>
             <Grid item xs={4}>

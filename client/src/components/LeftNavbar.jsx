@@ -20,22 +20,26 @@ const LeftNavbar = () => {
       {
         title: "Home",
         icon: <HomeIcon/>,
-        isProtected: false
+        isProtected: false,
+        link: "/"
       },
       {
         title: "Notifications",
         icon: <NotificationsIcon/>,
-        isProtected: true
+        isProtected: true,
+        link: "/notifications"
       },
       {
         title: "Messages",
         icon: <MailOutlineIcon/>,
-        isProtected: true
+        isProtected: true,
+        link: "messages"
       },
       {
         title: "Profile",
         icon: <PersonOutlineIcon/>,
-        isProtected: true
+        isProtected: true,
+        profile: ""
       },
     ];
 
@@ -71,12 +75,14 @@ const LeftNavbar = () => {
                         if(item.isProtected && !userIsLogged) return <></>;
                         return <>
                         <ListItem  key={key} disablePadding>
-                          <ListItemButton style={{ borderRadius: "20px" }}>
-                            <ListItemIcon>
-                              {item.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={item.title} />
-                          </ListItemButton>
+                          <Link to={item.link} style={{ textDecoration: 'none', color: "black"}}>
+                            <ListItemButton style={{ borderRadius: "20px" }}>
+                              <ListItemIcon>
+                                {item.icon}
+                              </ListItemIcon>
+                              <ListItemText primary={item.title} />
+                            </ListItemButton>
+                          </Link>
                         </ListItem>
                         </>
                       })
