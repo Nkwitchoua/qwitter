@@ -13,7 +13,6 @@ export const checkToken = async (req, res, next) => {
                 authData.authorized = false;
                 if(cookie) res.clearCookie("refresh_token");
             } else {
-                console.log("decoded -> ", decoded);
                 authData.authorized = true;
                 authData.email = decoded.email;
                 

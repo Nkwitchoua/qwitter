@@ -4,14 +4,19 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+// import { createServer}
 
 dotenv.config();
 
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
+import chatRoutes from "./routes/chats.js";
+import messagesRoutes from "./routes/messages.js";
 import { checkToken } from "./middleware/checkToken.js";
+import { createServer } from "http";
 
-const app = express();
+export const app = express();
+export const httpServer = createServer(app);
 
 app.use(cors({
     origin:'http://localhost:3000', 
@@ -31,6 +36,8 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
+app.use('/messages', chatRoutes);
+app.use('/messages', messagesRoutes);
 
 const CONNECTION_URL = process.env.DATABASE;
 
@@ -43,4 +50,3 @@ mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: tr
 .catch((error) => console.log(error));
 
 //mongoose.set("useFindAndModify", false);
-
