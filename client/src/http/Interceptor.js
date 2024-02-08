@@ -13,7 +13,7 @@ const Interceptor = () => {
     
     axios.interceptors.request.use(
         function(config) {
-            console.log("config -> ", config);
+            // console.log("config -> ", config);
             const access_token = sessionStorage.getItem('access_token');
             try {
                 if(access_token) {
@@ -28,7 +28,7 @@ const Interceptor = () => {
 
     axios.interceptors.response.use(
         function(response) {
-            console.log("RESPONSE CONFIG ->", response);
+            // console.log("RESPONSE CONFIG ->", response);
             if(response.data.authData && response.data.authData.authorized) {
                 dispatch(tokenIsValid(response.data.authData));
                 dispatch(setCurrentUser(response.data.currentUser));

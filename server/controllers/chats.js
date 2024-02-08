@@ -18,7 +18,7 @@ export const getChat = (chatId) => {
         if(!connectedSockets.has(socket.id)) {
             connectedSockets.add(socket.id);
 
-            console.log("USER CONNECTED!");
+            console.log("USER CONNECTED!", connectedSockets);
 
             socket.on("chat message", (msg) => {
                 console.log("THIS IS THE MESSAGE! -> ", msg);
@@ -33,8 +33,6 @@ export const getChat = (chatId) => {
             console.log("this client is already connected ! ", socket.id);
         }
     });
-
-    console.log(httpServer.listening);
     
     if(!httpServer.listening) {
         httpServer.listen(3001, () => {

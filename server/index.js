@@ -14,6 +14,7 @@ import chatRoutes from "./routes/chats.js";
 import messagesRoutes from "./routes/messages.js";
 import { checkToken } from "./middleware/checkToken.js";
 import { createServer } from "http";
+import User from "./models/user.js";
 
 export const app = express();
 export const httpServer = createServer(app);
@@ -48,5 +49,7 @@ const PORT = process.env.PORT || 5000;
 mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
 .catch((error) => console.log(error));
+
+export const db = mongoose.Collection;
 
 //mongoose.set("useFindAndModify", false);

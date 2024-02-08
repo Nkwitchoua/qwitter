@@ -1,8 +1,9 @@
 import axios from "axios";
+import { useSelector } from "react-redux";
 import io from "socket.io-client";
 
 const URL = 'http://localhost:5000/messages';
-const socketUrl = "http://localhost:3001"
+const socketUrl = "http://localhost:3001";
 let socket;
 let prevTimeout = null;
 
@@ -12,7 +13,7 @@ export const getMessages = (user) => async (dispatch) => {
     socket = io(socketUrl);
     // dispatch({ type: "CHAT_IS_LOADING" });
     try {
-        axios.get(URL + '/get_chat', chatId)
+        axios.get(URL + '/get_messages', chatId)
             .then(res => {
                 console.log("res from GET_CHAT -> ", res);
                 // dispatch({ type: "SET_CHAT", payload: res.data });
@@ -27,11 +28,18 @@ export const getMessages = (user) => async (dispatch) => {
 }
 
 export const searchUsers = (query) => async (dispatch) => {
+    dispatch({ type: "SEARCHING_USERS"});
+    
+    if(!query) {
+        return;
+    }
+
     if(prevTimeout) {
+        clearTimeout(prevTimeout);
         prevTimeout = null;
     }
 
-    console.log("query in action",query);
+    console.log("query in action -> ",query);
 
     prevTimeout = setTimeout(() => {
         try {
@@ -41,15 +49,16 @@ export const searchUsers = (query) => async (dispatch) => {
                 }
             })
             .then(res => {
-                console.log("res from GET_CHAT -> ", res);
-                // dispatch({ type: "SET_CHAT", payload: res.data });
+                console.log("res from SEARCH_USERS -> ", res);
+
+                dispatch({ type: "USERS_FOUND", payload: res.data });
             })
             .catch(err => {
-                console.log("ERROR IN GET CHAT", err);
+                console.log("ERROR IN SEARCH USERS", err);
                 // dispatch({ type: "SET_CHAT_ERROR", payload: err.response.data || {} });
             });
         } catch(err) {
             console.log(err);
         }
-    }, 0.5);
+    }, 700);
 }

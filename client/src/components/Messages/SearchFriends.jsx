@@ -10,13 +10,13 @@ const SearchFriends = () => {
 
   const handleInput = (event) => {
     const val = event.target.value;
-    console.log("handle input event", event);
+    
     if(val) {
       setQuery(val);
 
       console.log("query in component", query);
 
-      dispatch(searchUsers(query));
+      dispatch(searchUsers(val));
     }
   }
 
