@@ -13,8 +13,8 @@ const UsersList = () => {
 
     const chats = [];
 
-    const handleChatOpening = () => {
-        dispatch(getChat());
+    const handleChatOpening = (token) => {
+        dispatch(getChat(token));
     }
 
     if(usersSearching && !users) {
@@ -46,7 +46,7 @@ const UsersList = () => {
                                     <Avatar alt="user avatar" src={user.avatar}/>
                                 </ListItemAvatar>
                                 <ListItemText primary={user.name} />
-                                <IconButton onClick={() => handleChatOpening()}>
+                                <IconButton onClick={() => handleChatOpening(user.token)}>
                                     <MessageIcon/>
                                 </IconButton>
                             </ListItemButton>

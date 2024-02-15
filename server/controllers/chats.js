@@ -4,8 +4,8 @@ import { app, httpServer } from "../index.js";
 var io = null;
 const connectedSockets = new Set();
 
-export const getChat = (chatId) => {
-    console.log("GET CHAT FIRED!!!");
+export const getChat = (chatId, firstUser, secondUser) => {
+    let newChat = true;
 
     io = new Server(httpServer, {
         cors: {
@@ -14,6 +14,8 @@ export const getChat = (chatId) => {
         }
     });
 
+    if(chatId) newChat = false;
+
     io.on("connection", (socket) => {
         if(!connectedSockets.has(socket.id)) {
             connectedSockets.add(socket.id);
@@ -21,6 +23,12 @@ export const getChat = (chatId) => {
             console.log("USER CONNECTED!", connectedSockets);
 
             socket.on("chat message", (msg) => {
+                if(newChat) {
+
+
+
+                    newChat = false;
+                }
                 console.log("THIS IS THE MESSAGE! -> ", msg);
             })
 
@@ -36,7 +44,7 @@ export const getChat = (chatId) => {
     
     if(!httpServer.listening) {
         httpServer.listen(3001, () => {
-            console.log("HTTP SERVER CREATED!")
+            console.log("HTTP SERVER CREATED!");
             
         });
     }

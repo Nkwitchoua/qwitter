@@ -33,6 +33,7 @@ const userSchema = mongoose.Schema({
     subscribers: [String],
     subscribed: [String],
     description: String,
+    token: String
 }, {
     timestamps: true,
     collection: "users"
