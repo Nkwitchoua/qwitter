@@ -27,14 +27,6 @@ export const signup = (req, res, next) => {
                 email: email,
                 password: password,
             });
-
-            const someFunc = (arr, num) => {
-                for(let i = 0; i < arr.length; i++) {
-                    const curr = arr[i];
-                    if(curr > num) return curr;
-                }
-                return num;
-            }
             
             bcrypt.genSalt(10, (err, salt) => {
                 bcrypt.hash(password, salt, (err, hash) => {
@@ -71,7 +63,7 @@ export const signup = (req, res, next) => {
         res.status(500).json({
             errors: [{ error: 'Something went wrong'}]
         })
-    })
+    });
 }
 
 export const signin = (req, res) => {

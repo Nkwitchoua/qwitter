@@ -28,7 +28,6 @@ const Interceptor = () => {
 
     axios.interceptors.response.use(
         function(response) {
-            console.log("RESPONSE CONFIG ->", response);
             if(response.data.authData && response.data.authData.authorized) {
                 dispatch(tokenIsValid(response.data.authData));
                 dispatch(setCurrentUser(response.data.currentUser));

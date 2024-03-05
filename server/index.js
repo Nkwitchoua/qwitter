@@ -34,8 +34,6 @@ app.use('/posts', postRoutes);
 
 const CONNECTION_URL = process.env.DATABASE;
 
-console.log('CONNECTION URL ------> ', CONNECTION_URL);
-
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -43,4 +41,3 @@ mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: tr
 .catch((error) => console.log(error));
 
 //mongoose.set("useFindAndModify", false);
-
