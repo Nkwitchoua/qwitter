@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { createJWT } from "../utils/auth.js";
+import { createJWT, createJWTUserToken } from "../utils/auth.js";
 
 const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
@@ -45,11 +45,14 @@ export const signup = (req, res, next) => {
                                 maxAge: 60 * 1000,
                             });
 
+                            user.token = createJWTUserToken(user._id, process.env.USER_TOKEN_SECRET);
+                            user.save();
+
                             res.status(200).json({
                                 success: true,
                                 result: response,
                                 access_token: access_token
-                            })
+                            });
                         }).catch(err => {
                             console.log(err);
                             res.status(500).json({
@@ -73,7 +76,6 @@ export const signin = (req, res) => {
     if (!email) return res.status(422).json({ error: "EMAIL_NOT_PROVIDED" });
     if (!emailRegexp.test(email)) return res.status(422).json({ error: "INVALID_EMAIL" });
     if (!password) return res.status(422).json({ error: "PASSWORD_NOT_PROVIDED" });
-    console.log('BEFORE USER FIND ONE')
 
     User.findOne({ email: email }).then(user => {
         if(!user) {
@@ -99,6 +101,11 @@ export const signin = (req, res) => {
                     payload.access_token = access_token;
                 }
             });
+
+            if(!user.token) {
+                user.token = createJWTUserToken(user._id, process.env.USER_TOKEN_SECRET);
+                user.save();
+            }
 
             res.cookie('refresh_token', refresh_token
             , {

@@ -10,7 +10,6 @@ const initialState = {
 const linksReducer = (state = initialState, action) => state;
 
 export const getLinks = ({ links }) => links;
-console.log("store",reducers)
 
 export default configureStore({
     reducer: reducers,

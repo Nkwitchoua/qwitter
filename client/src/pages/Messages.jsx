@@ -1,6 +1,7 @@
 import { Container, Typography } from '@mui/material'
 import React from 'react'
 import SearchFriends from '../components/Messages/SearchFriends'
+import UsersList from '../components/Messages/UsersList'
 
 const Messages = () => {
   return (
@@ -13,6 +14,7 @@ const Messages = () => {
                 Messages
             </Typography>
             <SearchFriends/>
+            <UsersList/>
         </Container>
     </div>
   )
