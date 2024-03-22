@@ -4,7 +4,13 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-// import { createServer}
+import path from "path";
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 dotenv.config();
 
@@ -14,10 +20,18 @@ import chatRoutes from "./routes/chats.js";
 import messagesRoutes from "./routes/messages.js";
 import { checkToken } from "./middleware/checkToken.js";
 import { createServer } from "http";
+import { Server } from "socket.io";
 import User from "./models/user.js";
 
 export const app = express();
 export const httpServer = createServer(app);
+
+export let io = new Server(httpServer, {
+    cors: {
+        origin: "http://localhost:3000", // Разрешить доступ только с этого источника
+        methods: ["GET", "POST"] // Разрешенные методы
+    }
+});
 
 app.use(cors({
     origin:'http://localhost:3000', 
@@ -35,6 +49,12 @@ app.use((req, res, next) => {
     next();
 })
 
+// app.use('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+//     console.log("worked")
+// })
+
+// console.log(path.join(__dirname, "../client/build", "index.html"))
 app.use('/auth', authRoutes);
 app.use('/posts', postRoutes);
 app.use('/messages', chatRoutes);

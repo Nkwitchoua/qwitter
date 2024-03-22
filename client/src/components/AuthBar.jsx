@@ -21,15 +21,19 @@ const AuthBar = () => {
 
     return (
         <>
-            <Container sx={{
+            <Container 
+             maxWidth={"sm"}
+             sx={{
                 border: 1, 
                 borderColor: 'grey.200',
                 borderRadius: '20px',
                 py: 2,
+                m: 4,
+                position: "fixed",
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '20px', 
-                minWidth: '340px'
+                minWidth: '340px',
             }}>
                 <Typography 
                     component='h4' 

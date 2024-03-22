@@ -4,6 +4,9 @@ import SearchFriends from '../components/Messages/SearchFriends'
 import UsersList from '../components/Messages/UsersList'
 
 const Messages = () => {
+
+
+  
   return (
     <div>
         <Container sx={{borderBottom: 1, borderColor: "grey.200"}}>

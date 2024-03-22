@@ -2,7 +2,7 @@ const INIT_STATE = {
     userLogged: false,
     userIsLogging: false,
     userName: '',
-    userId: '',
+    userToken: '',
     userAvatar: '',
     signUpError: '',
 }
@@ -17,7 +17,6 @@ export default (authState = INIT_STATE, action) => {
                 userIsLogging: false,
             }
         case "SIGN_IN":
-            console.log("SIGNING_IN -----> ", authState.userLogged);
             return {
                 ...authState,
                 userLogged: true,
@@ -51,7 +50,8 @@ export default (authState = INIT_STATE, action) => {
             return {
                 ...authState,
                 userName: action.payload.name,
-                userAvatar: action.payload.avatar
+                userAvatar: action.payload.avatar,
+                userToken: action.payload.token
             }
         default:
             return authState;

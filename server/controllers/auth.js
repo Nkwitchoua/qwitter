@@ -48,6 +48,12 @@ export const signup = (req, res, next) => {
                             user.token = createJWTUserToken(user._id, process.env.USER_TOKEN_SECRET);
                             user.save();
 
+                            res.currentUser = {
+                                name: user.name,
+                                avatar: user.avatar,
+                                token: user.token
+                            }
+
                             res.status(200).json({
                                 success: true,
                                 result: response,
@@ -119,7 +125,8 @@ export const signin = (req, res) => {
             
             res.currentUser = {
                 name: user.name,
-                avatar: user.avatar
+                avatar: user.avatar,
+                token: user.token
             }
         };
 

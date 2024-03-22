@@ -15,6 +15,6 @@ export const createJWTUserToken = (userId, secretKey) => {
     const payload = {
         userId
     };
-    
+
     return jwt.sign(payload, secretKey);
 }

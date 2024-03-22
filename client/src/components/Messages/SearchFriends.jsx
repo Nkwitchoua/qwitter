@@ -14,8 +14,6 @@ const SearchFriends = () => {
     if(val) {
       setQuery(val);
 
-      console.log("query in component", query);
-
       dispatch(searchUsers(val));
     }
   }

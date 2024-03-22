@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const messageSchema = mongoose.Schema({
     text: String,
+    author: String,
     date: {
         type: Date,
         default: new Date()
@@ -13,7 +14,7 @@ const messageSchema = mongoose.Schema({
     unread: {
         type: Boolean,
         default: true
-    }
+    },
 });
 
 const chatSchema = mongoose.Schema({

@@ -22,7 +22,8 @@ export const checkToken = async (req, res, next) => {
                     }
                     res.currentUser = {
                         name: user.name,
-                        avatar: user.avatar
+                        avatar: user.avatar,
+                        token: user.token
                     }
                 }).catch(err => {
                     console.log("error user not found", err);

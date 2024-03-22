@@ -39,8 +39,6 @@ export const searchUsers = (query) => async (dispatch) => {
         prevTimeout = null;
     }
 
-    console.log("query in action -> ",query);
-
     prevTimeout = setTimeout(() => {
         try {
             axios.get(URL + '/search_users', {

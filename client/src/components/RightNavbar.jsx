@@ -23,8 +23,7 @@ const RightNavbar = () => {
   }
 
   return (
-    <Grid sx={{ px: 3, position: "fixed"}}>
-        <Grid item xs={8}>
+    <>
             {
               userIsLogged ? 
               <>
@@ -32,11 +31,7 @@ const RightNavbar = () => {
               </> :
               <AuthBar />
             }
-        </Grid>
-        <Grid item xs={4}>
-
-        </Grid>
-    </Grid>
+    </>
   )
 }
 
