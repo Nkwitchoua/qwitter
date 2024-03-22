@@ -72,7 +72,7 @@ export const signup = (req, res, next) => {
         res.status(500).json({
             errors: [{ error: 'Something went wrong'}]
         })
-    })
+    });
 }
 
 export const signin = (req, res) => {
