@@ -21,17 +21,11 @@ import messagesRoutes from "./routes/messages.js";
 import { checkToken } from "./middleware/checkToken.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import User from "./models/user.js";
 
 export const app = express();
 export const httpServer = createServer(app);
 
-export let io = new Server(httpServer, {
-    cors: {
-        origin: "http://localhost:3000", // Разрешить доступ только с этого источника
-        methods: ["GET", "POST"] // Разрешенные методы
-    }
-});
+
 
 app.use(cors({
     origin:'http://localhost:3000', 

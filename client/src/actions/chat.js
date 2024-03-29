@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import io from "socket.io-client";
+import socket from "../http/socket";
 
 const URL = 'http://localhost:5000/messages';
-const socketUrl = "http://localhost:5001"
-var socket = io(socketUrl, { autoConnect: false });
 
 // const dispatch = useDispatch();
+
+export const receiverMessage = (message) => async (dispatch) => {
+
+}
 
 export const getChat = (sender, receiver) => async (dispatch) => {
 
@@ -21,32 +23,30 @@ export const getChat = (sender, receiver) => async (dispatch) => {
         axios.post(URL + '/open_chat', data)
         .then(res => {
             console.log("res from GET_CHAT -> ", res);
-            
-            socket.connect();
-        
-            socket.onAny((event, ...args) => {
-                console.log(event, args);
-            });
 
-                // dispatch({ type: "SET_CHAT", payload: res.data });
-            })
-            .catch(err => {
-                console.log("ERROR IN GET CHAT", err);
-                // dispatch({ type: "SET_CHAT_ERROR", payload: err.response.data || {} });
-            });
+            // dispatch({ type: "SET_CHAT", payload: res.data });
+        })
+        .catch(err => {
+            console.log("ERROR IN GET CHAT", err);
+            // dispatch({ type: "SET_CHAT_ERROR", payload: err.response.data || {} });
+        });
     } catch(err) {
         console.log(err);
     }
 }
+
+socket.on("private message", (message) => {
+    console.log("private MESSAGE -> ", message);
+});
 
 export const setChat = (sender, receiver, receiverData) => (dispatch) => {
     console.log("RECEIVER DATA -> ", receiverData);
     dispatch({ type: "SET_CHAT", payload: {sender: sender, receiver: receiver, name: receiverData.name, avatar: receiverData.avatar} });
 }
 
-export const sendMessage = (message) => {
+export const sendMessage = (message, receiver) => {
     try {
-        socket.emit("private message", message);
+        socket.emit("private message", { content: message, receiver: receiver});
     } catch(err) {
         console.log(err);
     }

@@ -19,9 +19,10 @@ const messageSchema = mongoose.Schema({
 
 const chatSchema = mongoose.Schema({
     users: [String],
+    chatId: String,
     messages: {
         type: [messageSchema],
-        default: [""]
+        default: []
     }
 });
 

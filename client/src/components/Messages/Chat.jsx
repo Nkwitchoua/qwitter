@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getChat, sendMessage } from '../../actions/chat';
 import SendIcon from '@mui/icons-material/Send';
+import socket from '../../http/socket';
 
 const Chat = () => {
 
@@ -24,16 +25,25 @@ const Chat = () => {
   }
 
   const handleClickSend = () => {
-    console.log("MESSAGE", message);
-    sendMessage(message);
+    console.log("MESSAGE SENT -> ", message);
+    sendMessage(message, receiver);
+    setMessage("");
   }
 
+  socket.on("private message", (message) => {
+    console.log("private MESSAGE -> ", message);
+  });
+
   useEffect(() => {
-    console.log("USE EFFECT CALLED IN CHAT COMPONENT", sender , "RECEIVER -> ", receiverToken)
+
     if(sender && receiverToken) {
+      socket.auth = { sender };
+      socket.connect();
+
       dispatch(getChat(sender, receiverToken));
-      console.log("USE EFFECT GET CHAT CALLED IN CHAT COMPONENT")
     }
+
+    // return socket.disconnect();
   }, [receiverToken]);
 
   return (
@@ -96,3 +106,4 @@ const Chat = () => {
 }
 
 export default Chat
+// export Chat.socket;
