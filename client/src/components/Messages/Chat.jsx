@@ -26,19 +26,16 @@ const Chat = () => {
 
   const handleClickSend = () => {
     console.log("MESSAGE SENT -> ", message);
-    sendMessage(message, receiver);
+    sendMessage(message, receiverToken);
     setMessage("");
   }
-
-  socket.on("private message", (message) => {
-    console.log("private MESSAGE -> ", message);
-  });
 
   useEffect(() => {
 
     if(sender && receiverToken) {
-      socket.auth = { sender };
+      socket.auth = { sender, receiver: receiverToken };
       socket.connect();
+      socket.id = sender;
 
       dispatch(getChat(sender, receiverToken));
     }

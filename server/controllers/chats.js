@@ -11,16 +11,19 @@ const httpServer = createServer();
 
 if(!httpServer.listening) {
     httpServer.listen(5001, () => {
-        console.log("HTTP SERVER CREATED!");
-        
+        console.log("HTTP SERVER CREATED!"); 
     });
 }
 
-const redisClient = createClient();
+const redisClient = await createClient();
 
+redisClient.on("connect", () => {
+    console.log("CONNECTED TO REDIS");
+})
+
+redisClient.on('error', err => console.log('Redis Client Error', err));
 
 const sessionStore = new RedisSessionStore(redisClient);
-
 
 export const io = new Server(httpServer, {
     cors: {
@@ -29,23 +32,56 @@ export const io = new Server(httpServer, {
     }
 });
 
-const connectedSockets = new Set();
-
 io.use(async (socket, next) => {
-    const sessionId = socket.handshake.auth;
-    console.log(sessionId)
+    const userToken = socket.handshake.auth.sender;
+    const receiverId = socket.handshake.auth.receiver;
+    
+    if(userToken) {
+        console.log("user token for search -> ", userToken);
+        const session = await sessionStore.findSession(userToken);
+
+        if(session && session.userToken) {
+            console.log("SESSION FOUND! -> ", session.userId);
+            socket.userId = session.userId;
+            socket.userToken = session.userToken;
+            socket.receiverId = session.receiverId;
+            
+            return next();
+        }
+    }
+
+    const userId = await decryptUserToken(userToken);
+
+    sessionStore.saveSession(userToken, userId, socket.id, true);
+    socket.userId = userId;
+
+    console.log("SOCKET ID ---------------> ", socket.id);
+
     next();
 
 })
 
 io.on("connection", (socket) => {
-    // socket.join(senderId);
+    socket.join(socket.userToken);
 
-    console.log("USER CONNECTED TO SOCKET -> ")
+    socket.to(socket.id).emit("bababu", { content: "hi" });
 
-    socket.on("private message", (msg) => {
-        // saving it on db 
-    })
+    console.log("USER CONNECTED TO SOCKET -> ", socket.userId);
+
+    socket.on("private_message", async (msg) => {
+
+        const receiverSession = await sessionStore.findSession(msg.receiver);
+        
+        console.log("RECEIVER ID ON PRIV MSG -> ", receiverSession);
+
+        if(receiverSession) {
+            socket.to(socket.id).to(receiverSession.socketId).emit("private_message", { content: msg.content })
+        } else {
+            socket.to(socket.userToken).emit("private_message", { content: msg.content });
+        }
+        
+        console.log("Private message -> ", msg);
+    });
 
     socket.on('disconnect', () => {
         console.log('USER DISCONNECTED!');

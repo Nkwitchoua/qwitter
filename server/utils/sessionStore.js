@@ -14,26 +14,43 @@ class SessionStore {
       this.redisClient = redisClient;
     }
   
-    findSession(id) {
-      return this.redisClient
-        .hmget(`session:${id}`, "userID", "username", "connected")
-        .then(mapSession);
-    }
+    async findSession(id) {
+      try {
+          const session = await new Promise((resolve, reject) => {
+              this.redisClient.hmget(`session:${id}`, "userId", (err, reply) => {
+                  if (err) {
+                      console.log("Error in hmget findSession -> ", err);
+                      reject(err);
+                  } else {
+                      console.log("reply -----> ", reply);
+                      resolve(reply);
+                  }
+              });
+          });
   
-    saveSession(id, { userID, username, connected }) {
+          console.log('this is what i found ', session);
+          return session;
+      } catch (error) {
+          console.error('Error in findSession: ', error);
+          return null;
+      }
+  }
+  
+  
+    saveSession(id, userId, socketId, connected) {
+
+      console.log(`session saving data: \n sessionId: ${id}, userId: ${userId}, socketId: ${socketId}`);
+
       this.redisClient
-        .multi()
-        .hset(
+        .hmset(
           `session:${id}`,
-          "userID",
-          userID,
-          "username",
-          username,
+          "userId",
+          userId,
+          "socketId",
+          socketId,
           "connected",
           connected
         )
-        .expire(`session:${id}`, SESSION_TTL)
-        .exec();
     }
   
     async findAllSessions() {
